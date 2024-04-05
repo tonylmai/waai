@@ -1,13 +1,16 @@
 """ This is a micro-service that provides gRPC methods for recommending a complete
   itinerary based on user's input (list of locations and context from user's preferences)"""
 from concurrent import futures
-# import sys
+import sys
+from signal import signal, SIGTERM
+
+sys.path.append('./')                   # Needs to add local folder to traverse between modules
+sys.path.append('../protobufs/python')  # Need to traverse one down to pick up the protobuf stuffs
+
 import grpc
 # from grpc_interceptor import ErrorLogger
 from grpc_interceptor import ExceptionToStatusInterceptor
 from grpc_interceptor.exceptions import NotFound
-
-# sys.path.append('../')  # Need to traverse one level up before we could traverse down
 
 from concierge_pb2 import (
     RecommendationResponse
@@ -17,9 +20,6 @@ import concierge_pb2_grpc
 from service import concierge as svc
 
 class ConciergeService(concierge_pb2_grpc.ConciergeServicer):
-    @catch_and_log_exceptions
-    @log_request_counts
-    @log_latency
     def Recommend(self, request, context):
         """Recommend a complete itinerary based on user's input (list of locations and context from user's preferences)"""
         if not request.question:
@@ -35,6 +35,7 @@ def serve():
     host = "[::]"
     port = 50051
     print(f"Starting server at {host}:{port}...")
+
     # interceptors = [ErrorLogger()]
     interceptors = [ExceptionToStatusInterceptor()]
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10), interceptors=interceptors)
@@ -43,6 +44,15 @@ def serve():
     )
     server.add_insecure_port(f"{host}:{port}")
     server.start()
+
+    def handle_sigterm(*_):
+        print("Received shutdown signal")
+        all_rpcs_done_event = server.stop(30)
+        all_rpcs_done_event.wait(30)
+        print("Shut down gracefully")
+
+    # Register the handler for signals from Kubernetes or almost any other process
+    signal(SIGTERM, handle_sigterm)
     server.wait_for_termination()
 
 

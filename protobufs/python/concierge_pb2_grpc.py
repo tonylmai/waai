@@ -15,7 +15,7 @@ class ConciergeStub(object):
             channel: A grpc.Channel.
         """
         self.Recommend = channel.unary_unary(
-                '/common.Concierge/Recommend',
+                '/Concierge/Recommend',
                 request_serializer=concierge__pb2.RecommendationRequest.SerializeToString,
                 response_deserializer=concierge__pb2.RecommendationResponse.FromString,
                 )
@@ -40,7 +40,7 @@ def add_ConciergeServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'common.Concierge', rpc_method_handlers)
+            'Concierge', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
@@ -59,7 +59,7 @@ class Concierge(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/common.Concierge/Recommend',
+        return grpc.experimental.unary_unary(request, target, '/Concierge/Recommend',
             concierge__pb2.RecommendationRequest.SerializeToString,
             concierge__pb2.RecommendationResponse.FromString,
             options, channel_credentials,

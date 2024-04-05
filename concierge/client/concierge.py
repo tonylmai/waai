@@ -1,10 +1,9 @@
-# import os
-# import sys
-import grpc
+import sys
 
+sys.path.append('../../protobufs/python')  # Need to traverse one down to pick up the protobuf stuffs
 # sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-# sys.path.append('../')  # Need to traverse one level up before we could traverse down
 
+import grpc
 from concierge_pb2 import RecommendationRequest
 from concierge_pb2_grpc import ConciergeStub
 

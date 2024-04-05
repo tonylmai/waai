@@ -1,0 +1,6 @@
+fastapi==0.110.0
+uvicorn==0.27.1
+grpcio-tools~=1.30
+flask ~= 1.1
+Jinja2 ~= 2.11
+pytest ~= 5.4

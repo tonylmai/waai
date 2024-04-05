@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+  
+  waai:
+    build:
+      context: .
+      dockerfile: waai/Dockerfile
+    environment:
+      CONCIERGE_HOST: localhost
+      CONCIERGE_PORT: 50051
+    image: waai
+    networks:
+      - microservices
+    ports:
+      - 5000:5000
+    
+  concierge:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: concierge
+    networks:
+      - microservices
+
+networks:
+  microservices:

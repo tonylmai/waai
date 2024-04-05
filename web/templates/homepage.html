@@ -1,0 +1,17 @@
+<!-- homepage.html -->
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Online Books For You</title>
+</head>
+
+<body>
+    <h1>Destinations you may like</h1>
+    <ul>
+
+        {% for dest in destinations %}
+        <li>{{ dest.poi.description }}</li>
+        {% endfor %}
+    </ul>
+</body>

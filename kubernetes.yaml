@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: waai
+  labels:
+    app: waai
+
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: waai
+  template:
+    metadata:
+      labels:
+        app: waai
+    spec: 
+      containers:
+        - name: waai
+          image: tonylmai/python-microservices-article-waai:0.1
+          env:
+            - name: CONCIERGE_HOST
+              value: concierge 
+            - name: CONCIERGE_PORT
+              value: 50051
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: concierge
+  labels:
+    app: concierge
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: concierge
+  template:
+    metadata:
+      labels:
+        app: concierge
+    spec: 
+      containers:
+        - name: concierge
+          image: tonylmai/python-microservices-article-concierge:0.1
+
+
+apiVersion: apps/v1
+kind: Service
+metadata:
+  name: concierge
+spec:
+  selector:
+    app: concierge
+  ports:
+    - protocol: TCP
+      port: 50051
+      targetPort: 50051
+
+
+apiVersion: apps/v1
+kind: Service
+metadata:
+  name: waai
+spec:
+  selector:
+    app: waai
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000

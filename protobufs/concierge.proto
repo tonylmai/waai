@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+enum ResourceType {
+    FREE = 0;
+    FOR_HIRE = 1;
+}
+
+message LatLng {
+    float lat = 1;
+    float lng = 2;
+}
+
+message Location {
+    LatLng latLng = 1;
+    optional int32 headings = 2;
+}
+
+message Address {
+    int64 id = 1;
+    optional Location location = 2;
+    string street_number = 3;
+    optional string street_number_2 = 4;
+    string city = 5;
+    optional string state = 6;
+    string country = 7;
+    optional int32 zip_code = 8;
+}
+
+message TimeZone {
+    int32 id = 1;
+    string shorthand = 2;
+}
+
+enum MediaType {
+    JPG = 0;
+    JPEG = 1;
+    MP4 = 2;
+    MOV = 3;
+}
+
+message Media {
+    MediaType media_type = 1;
+    string url = 2;
+    optional double size = 3;
+}
+
+message PointOfInterest {
+    int64 id = 1;
+    string description = 2;
+    optional ResourceType resource_type = 3;
+    Address address = 4;
+    optional TimeZone time_zone = 5;
+    repeated Media media = 6;
+}
+
+enum DestinationCategory {
+    TOUR = 0;
+    WALKING = 1;
+}
+
+message Destination {
+    int64 id = 1;
+    optional DestinationCategory category = 2;
+    PointOfInterest poi = 3;
+}
+
+message RecommendationRequest {
+    string user_id = 1;
+    string question = 2;
+    repeated string preferences = 3;
+}
+
+message RecommendationResponse {
+    repeated Destination destinations = 1;
+}
+
+service Concierge {
+    rpc Recommend(RecommendationRequest) returns (RecommendationResponse);
+}

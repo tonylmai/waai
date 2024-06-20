@@ -67,7 +67,7 @@ message Destination {
 message RecommendationRequest {
     string user_id = 1;
     string question = 2;
-    repeated string preferences = 3;
+    map<string, string> preferences = 3;
 }
 
 message RecommendationResponse {

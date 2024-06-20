@@ -5,11 +5,10 @@ import sys
 from signal import signal, SIGTERM
 
 sys.path.append('./')                   # Needs to add local folder to traverse between modules
-sys.path.append('../protobufs/python')  # Need to traverse one down to pick up the protobuf stuffs
+sys.path.append('../protobufs/python')  # Need to traverse up then down to pick up the protobuf stuffs
 
 import grpc
-# from grpc_interceptor import ErrorLogger
-from grpc_interceptor import ExceptionToStatusInterceptor
+from grpc_interceptor import ExceptionToStatusInterceptor, ServerInterceptor
 from grpc_interceptor.exceptions import NotFound
 
 from concierge_pb2 import (
@@ -30,14 +29,27 @@ class ConciergeService(concierge_pb2_grpc.ConciergeServicer):
         dests = svc.recommend(question=request.question, preferences=request.preferences)
         return RecommendationResponse(destinations=dests)
 
+class ErrorLogger(ServerInterceptor):
+    """An intercepter that logs error message"""
+    def intercept(self, method, request, context, method_name):
+        """Intercepts the method call"""
+        try:
+            return method(request, context)
+        except Exception as e:
+            self.log_error(method_name, e)
+            raise
+
+    def log_error(self, method_name: str, e: Exception) -> None:
+        """Logs error messages"""
+        print(f"An error has occurred in method {method_name} with exception: {e}")
+
 def serve():
     """Bring up the server and begin serving"""
     host = "[::]"
     port = 50051
     print(f"Starting server at {host}:{port}...")
 
-    # interceptors = [ErrorLogger()]
-    interceptors = [ExceptionToStatusInterceptor()]
+    interceptors = [ExceptionToStatusInterceptor(), ErrorLogger()]
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10), interceptors=interceptors)
     concierge_pb2_grpc.add_ConciergeServicer_to_server(
         ConciergeService(), server

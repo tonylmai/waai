@@ -3,7 +3,7 @@ from concierge_pb2 import (
 )
 
 # from mocked import concierge as rag
-from rag import concierge as rag
+from concierge.recommendation import recommendation as rag
 
 def recommend(question: str, preferences: str) -> list[Destination]:
     """Return a list of destinations recommended by the Concierge (Reco) Engine"""

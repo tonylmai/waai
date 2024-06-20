@@ -1,3 +1,7 @@
+import sys
+
+sys.path.append('../../concierge')
+sys.path.append('../../protobufs/python')  # Need to traverse up then down to pick up the protobuf stuffs
 
 from concierge import ConciergeService
 

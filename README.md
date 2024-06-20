@@ -1,8 +1,3 @@
-## To run
-```
-docker-compose up
-```
-
 ## To build
 ``` 
 docker-compose build
